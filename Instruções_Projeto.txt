@@ -1,0 +1,50 @@
+Projeto monolitico - Estruturação do projeto:
+
+1 - Criando Pasta do Projeto:
+- Abrir terminal e criar a seguinte pasta
+    - mkdir Fina.Balta.io
+
+2 - Criar a Solution(sln):
+- Entrar na pasta criada e criar a solução com o seguinte comando:
+    - dotnet new sln
+
+3 - Criar a Camada API:
+- No mesmo diretorio, crie a camada API com o comando abaixo:
+    - dotnet new web -o Fina.api -f net8.0
+
+4 - Criar a Camada Web:
+- No mesmo diretorio, cria a camada WEB com o comando abaixo:
+    - OPÇÂO COM BLAZOR o front-end(Substitui o javascript e utiliza C# no front-end).
+        - dotnet new blazorwasm -o Fina.Web --pwa -f net8.0
+    
+    OU
+    
+    - OPÇÂO Web Mvc Padrão.
+        - dotnet new mvc -o Fina.Web -f net8.0
+
+5 - Criar a camada Core:
+- No mesmo diretorio, crie a camada core usando o seguinte comando:
+    - dotnet new classlib -o Fina.Core -f net8.0
+
+6 - Relacione os projetos criado a solution:
+    - dotnet sln add Fina.api/
+    - dotnet sln add Fina.Web/
+    - dotnet sln add Fina.Core/
+
+7 - Adicione as referencias dos projetos:
+OBS: O projeto Core, não referencia ninguem, nã sabe da existencias dos outros projetos.
+     Já os demais precisam referenciar o projeto Core.
+
+    Adicionando as referencias:
+    Projeto Fina.api - Acesse a pasta desse projeto e adicione a referencia ao projeto Core:
+        - cd Fina.api
+        - dotnet add reference ../Fina.Core
+
+    Projeto Fina.Web - Acesse a pasta desse projeto e adicione a referencia ao projeto Core:
+        - cd Fina.Web
+        - dotnet add reference ../Fina.Core
+
+8 - Por fim, dar um build no projeto para ver se tem algum erro:
+    - dotnet build
+
+Paramos nos 46 minutos
