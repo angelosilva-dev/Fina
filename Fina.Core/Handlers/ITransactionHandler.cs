@@ -12,7 +12,7 @@ namespace Fina.Core.Handlers
 {
     public interface ITransactionHandler
     {
-        Task<PagedResponse<List<Transaction?>>> GetTransactionByPeriodAsync(GetTransactionsByPeriodRequest getTransactionsByPeriodRequest);
+        Task<PagedResponse<List<Transaction?>>> GetByPeriodAsync(GetTransactionsByPeriodRequest getTransactionsByPeriodRequest);
         Task<Response<Transaction?>> GetByIdAsync(GetTransactionByIdRequest getTransactionByIdRequest);
         Task<Response<Transaction?>> CreateAsync(CreateTransactionRequest createTransactionRequest);
         Task<Response<Transaction?>> UpdateAsync(UpdateTransactionRequest updateTransactionRequest);

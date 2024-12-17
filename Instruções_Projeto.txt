@@ -47,4 +47,66 @@ OBS: O projeto Core, não referencia ninguem, nã sabe da existencias dos outros
 8 - Por fim, dar um build no projeto para ver se tem algum erro:
     - dotnet build
 
-Paramos nos 46 minutos
+
+### CAMADA CORE  ###
+Iniciar codando a parte da camada core, ciando os Models, Enums, Handlers/interfaces, Classes Requests e Responses
+
+
+### CAMADA API ###
+Posteriormente  codar a camada API.
+- Adicione os pacotes para incluir acesso ao banco de dados, nesse caso, utilizaremos Entity Framerwork Core com banco de dados Mysql:
+    - dotnet add package Microsoft.EntityFrameworkCore.Design;
+    - dotnet add package MySql.EntityFrameworkCore
+
+- Criar dentro do projeto API a pasta DATA.
+    - Dentro da pasta data, criar uma pasta chamada Mappings, no qual deverá conter as classes que estão na pasta Models da camada Core.
+    - Por exemplo: Se na camada Core na pasta Models tem a classe Category, na pasta Mappings deveremos criar a classe CategoryMappings 
+      para definir o nome da tabela do banco de dados, tipos de colunas, quantidade de caractres dentre outras regras de banco de dados.
+
+- Criar dentro da pasta Data, a classe DbContext para herdar as configurações de mapeamentos do EntityFrameworkCore.
+    - Configurar nessa classe o contrutor, as propriedades DbSet e metodo onModelCreating.
+
+    EX:
+        public class AppDbContext : DbContext
+    {
+        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
+        {
+            
+        }
+
+        public DbSet<Category> Categories { get; set; } = null!;
+        public DbSet<Transaction> Transactions { get; set; } = null!;
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetCallingAssembly());
+        }
+    }
+
+- Na classe program.cs, configurar a connections string e injeção de dependencia do DbContext com o Mysql:
+    Ex:
+
+    const string connectionString = "Server=localhost;Database=fina;User=root;Password=angcessil;";
+
+    builder.Services.AddDbContext<AppDbContext>(
+        options => options.UseMySQL(connectionString));
+
+- Criar as Migrations:
+    Dentro do projeto de camada API, rodar o seguinte comando para criar a migration:
+    - dotnet ef migrations add InitialMigrationsFinaDatabase
+    - dotnet ef database update
+
+- Criar a pasta Handlers na camada de Api, para realizar as implementações das interfaces criadas na pasta Handlers da camada Core:
+    - Criar pasta Handlers;
+
+- Criar pasta Common/ -> Api/ e dentro da pasta Api, criar uma interface IEndpoint que irá conter o contrato:
+    - static abstract void Map(IEndpointRouteBuilder builder);
+
+- Criar a pasta Endpoints, e dentro da mesma as pastas dos endpoints(Ex: Categories, Products) na camada Api para centralizar as chamadas aos endpoints,
+  no qual cada classe criada nessas pastas herdará de IEndpoint.
+
+
+- Adicionando na camada api suporte ao Swagger/Documentação da Api
+    - Adicionar os seguintes pacotes:
+        dotnet add package Microsoft.AspNetCore.OpenApi
+        dotnet add package SwashBuckle.AspNetCore
