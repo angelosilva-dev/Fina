@@ -98,7 +98,7 @@ namespace Fina.api.Handlers
             }
         }
 
-        public async Task<PagedResponse<List<Category>?>> GetAllAsync(GetAllCategoriesRequest request)
+        public async Task<PagedResponse<List<Category?>>> GetAllAsync(GetAllCategoriesRequest request)
         {
             try
             {
@@ -115,7 +115,7 @@ namespace Fina.api.Handlers
 
                 var count = await query.CountAsync();
 
-                return new PagedResponse<List<Category>?>(
+                return new PagedResponse<List<Category?>>(
                     categories,
                     count,
                     request.PageNumber,
@@ -123,7 +123,7 @@ namespace Fina.api.Handlers
             }
             catch
             {
-                return new PagedResponse<List<Category>?>(null, 500, "Não foi possível consultar as categorias");
+                return new PagedResponse<List<Category?>>(null, 500, "Não foi possível consultar as categorias");
             }
         }
     }

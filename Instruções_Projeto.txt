@@ -1,4 +1,4 @@
-Projeto monolitico - Estruturação do projeto:
+Projeto monolitico com Minimal Apis e Blazor WebAssembly - Estruturação do projeto:
 
 1 - Criando Pasta do Projeto:
 - Abrir terminal e criar a seguinte pasta
@@ -49,7 +49,7 @@ OBS: O projeto Core, não referencia ninguem, nã sabe da existencias dos outros
 
 
 ### CAMADA CORE  ###
-Iniciar codando a parte da camada core, ciando os Models, Enums, Handlers/interfaces, Classes Requests e Responses
+Iniciar codando a parte da camada core, criando os Models, Enums, Handlers/interfaces, Classes Requests e Responses
 
 
 ### CAMADA API ###
@@ -110,3 +110,99 @@ Posteriormente  codar a camada API.
     - Adicionar os seguintes pacotes:
         dotnet add package Microsoft.AspNetCore.OpenApi
         dotnet add package SwashBuckle.AspNetCore
+
+- Centralizando todo o codigo referente a chamadas de serviços, swagger, banco de dados(DbContext) da class program.cs nas seguintes pastas:
+    - No projeto Api, criar as pastas:
+        - Common > Api
+            - Dentro dessa pasta, criar as classes referente as extensões que serão chamadas na classe program.cs.
+            - Toda configuação de banco de dads, swagger, Services, CORS, ficarão centralizados nesse diretorio.
+
+        - Na classe program.cs, colocaremos as chamadas na ordem exata conforme exemplo abaixo:
+            var builder = WebApplication.CreateBuilder(args);
+            builder.AddConfiguration();
+            builder.AddDBContext();
+            builder.AddCrossOrigin();
+            builder.AddDocumentation();
+            builder.AddServices();
+
+            var app = builder.Build();
+            if (app.Environment.IsDevelopment())
+                app.ConfigureDevEnviroment();
+
+            app.UseCors(ApiConfiguration.CorsPolicyName);
+            app.MapEndpoints();
+
+            app.Run();
+
+
+### CAMADA WEB ###
+1 - Preparando a estrutura e removendo alguns arquivos do template padrão(Conforme sugestão do balta):
+    - Na pasta Pages, remover as paginas que vieram criadas e deixar apenas a pagina Home.razor.
+    - Na pasta wwwroot remover a pasta sample-data
+    - Na pasta wwwroot > css, caso venha a utilizar o mudblazor, remover a pasta bootstrap que vem por padrão, 
+      caso contrario, se nao for usar mudblazor, manter a pasta bootstrap ou instalar um Framerwork de css do seu gosto.
+    - Na pasta Layout remover o arquivo NavMenu.razor caso não for usar o menu padrão e no arquivo MainLayout.razor, remover o css aninhado ao arquivo.
+    - Renomear a pasta Layout para Layouts e ajustar o novo nome no arquivo imports.razor
+    - o arquivo index.html da pasta wwwroot, remover a referencia do bootstrap caso tenha removido o mesmo da pasta css.
+
+2 - Nesse projeto iremos utilizar o mudblazor para estilização(css) de layout, portanto, para instalar,executar o pacote abaixo na camada web:
+    - dotnet add package MudBlazor
+    - Após instalar, precisamos importar o using do MudBlazor no arquivo imports.razor:
+        - @using MudBlazor
+    
+    - No arquivo index.html, vamos referenciar o script do MudBlazor no final do arquivo antes do serviceWorker.
+        - <!-- Importanção do MudBlazor -->
+          <script src="content/MudBlazor/MudBlazor.min.js"></script>
+
+    - E por fim, no arquivo program.cs do projeto Web, devemos acrescentar a dependencia do MudBlazor(abaixo de RootsComponents):
+        - builder.Services.AddMudServices(); 
+
+    - Como nosso MainLayout.razor foi todo desmontado, precisamos acrescentar o layout do MudBlazor:
+        @inherits LayoutComponentBase
+
+        <MudBlazor.MudThemeProvider/>
+        <MudBlazor.MudDialogProvider/>
+
+        <MudLayout>
+            <MudBlazor.MudMainContent>
+                @Body
+            </MudBlazor.MudMainContent>
+        </MudLayout>
+
+    OBS: Layouts sempre tem a chamada "@inherits LayoutComponentBase" no inicio do arquivo;
+         Enquanto as paginas, sempre iniciarão com @page "/"
+
+3 - Criando o Crud no frontend:
+    - Primeiramente iremos adicionar o pacote Extensions Http da Microsoft que usaremos para criar as requisições:
+    - dotnet add package Microsoft.Extensions.Http
+
+    - Criar na raiz da camada Web, a classe WebConfiguration:
+        public static class WebConfiguration
+        {
+            public const string HttpClientName = "Api";
+
+        }
+
+    - Na classe program.cs, Devemos configurar o http client para apontar na url do backend/Api:
+    builder.Services.AddHttpClient(
+        WebConfiguration.HttpClientName,
+        opt =>
+        {
+            opt.BaseAddress = new Uri(Configuration.BackendUrl);
+        });
+
+    - Em seguida Criamos a pasta Handlers na camada Web para criar as classes Category e Transaction e herdar a implementação das 
+      interfaces Handlers da camada Core.
+
+    - Em seguida precisamos resolver esses serviços adicionando a injeção de dependencia na classe program.cs:
+        builder.Services.AddTransient<ICategoryHandler, CategoryHandler>();
+
+    - Criar dentro de Pages, a pasta Category, e dentro da mesma os arquivos Pages(.razor) que representam o CRUD, exemplo:
+        - Para a pagina de criação de uma categoria:
+            - Create.razor
+            - Create.razor.cs
+                - Dentro da classe Create.razor.cs, Definir um nome para a classe e fazer a mesma herdar de ComponentBase.
+
+
+
+
