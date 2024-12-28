@@ -204,5 +204,18 @@ Posteriormente  codar a camada API.
                 - Dentro da classe Create.razor.cs, Definir um nome para a classe e fazer a mesma herdar de ComponentBase.
 
 
+GIT Comandos:
+
+dotnet new gitignore - Criar o arquivo gitignore no projeto
+
+git init
+
+git add --all
+
+git status
+
+git commit -m "Finalizado a api"
+
+git push -u origin main
 
 
